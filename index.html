@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <!-- Тестирование работы в редакторе -->
+    <h1>Текстовый редактор JakubaEditor</h1>
+    <form action="#" method="post" onsubmit="return save()">
+
+<!-- ######################################################################################################################## -->       
+    <textarea id="hidden-text" style="display: none;"></textarea>
+    <button onclick="setBold()">Bold</button>
+    <button onclick="setItalic()">Italic</button>
+    <br>
+    <div id="editor" style="max-width: 50%; width: 500px; height: 200px; border: 1px solid #000;" contenteditable="true">Type your text here...</div>
+    <br>
+
+    <script>
+        function setBold() {
+            document.execCommand('bold', false, null);
+        }
+
+        function setItalic() {
+            document.execCommand('italic', false, null);
+        }
+
+        function updateHiddenText() {
+            var editorContent = document.getElementById('editor').innerHTML;
+            document.getElementById('hidden-text').value = editorContent;
+        }
+    </script>
+<!-- ######################################################################################################################## --> 
+    <script>
+        function save() {
+            var text = document.getElementById("hidden-text").value;
+            var messageDiv = document.getElementById("result");
+            messageDiv.innerHTML = text;
+            return false;
+        }
+        function updateText() {
+            updateHiddenText();
+            save();
+        }
+    </script>
+    <button type="submit" onclick="updateText()">Обновить</button>
+    </form>
+
+    
+    <!-- Результат работы -->
+    <hr color="black" size="3" width="100%">
+    <h1>Содержимое текстового редактора</h1>
+    <div id="result"></div>
+    
+</body>
+</html>
