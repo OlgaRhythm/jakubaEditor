@@ -84,12 +84,94 @@
 
     </style>
 
+    <!-- Описание функций -->
+    <script>
+        
+        class JakubaEditor {
+            containerId;
+
+            constructor (_containerId) {
+                this.updateHiddenText();
+                this.containerId = _containerId;
+                // работа меню
+                /*
+                document.querySelectorAll("#toolbar>div").forEach(function(element) {
+                    element.addEventListener("click", function() {
+                        element.classList.add("active");
+                    });
+                });
+                
+                document.querySelectorAll("#toolbar>div>ul>li").forEach(function(element) {
+                    element.addEventListener("click", function() {
+                        element.classList.toggle("active");
+                    });
+                });
+
+                document.addEventListener("mousedown", function(event) {
+                    var target = event.target;
+                    this.toolbarRemoveActive(target, "#toolbar>div>ul>li", "#toolbar>div, #toolbar>div>ul>li");
+                    this.toolbarRemoveActive(target, "#toolbar>div>ul>li>ul", "#toolbar>div>ul>li");
+                });
+                */
+            } 
+
+            // жирный шрифт, bold
+            setBold() {
+                document.execCommand('bold', false, null);
+            }
+            // курсивный шрифт, italic
+            setItalic() {
+                document.execCommand('italic', false, null);
+            }
+            // нижнее подчёркивание, underline
+            setUnderline() {
+                document.execCommand('underline', false, null);
+            }
+            // зачёркивание текста, strikeThrough
+            setStrikeThrough() {
+                document.execCommand('strikeThrough', false, null);
+            }
+            // размер шрифта
+            setFontSize(fontSizePt) {
+                selection = window.getSelection().toString();
+                wrappedselection = '<span style="font-size: ' + fontSizePt + '">' + selection + '</span>';
+                document.execCommand('insertHTML', false, wrappedselection);
+            }
+            
+            // шрифт
+            setFont(fontFamily) {
+                document.execCommand('fontName', false, fontFamily);
+            }
+            
+            // обновление контента
+            updateHiddenText() {
+                var editorContent = document.getElementById('editor').innerHTML;
+                document.getElementById('jakuba_editor_content').value = editorContent;
+            }
+
+            toolbarRemoveActive(target, arg1, arg2) {
+                var isInsideToolbarUl = target.closest(arg1);
+                if (!isInsideToolbarUl) {
+                    document.querySelectorAll(arg2).forEach(function(element) {
+                        element.classList.remove("active");
+                    });
+                }
+            }
+        }
+
+    </script>
+
 </head>
 <body>
 
     <!-- Тестирование работы в редакторе -->
     <h1>Текстовый редактор JakubaEditor</h1>
     <form action="#" method="post" onsubmit="return save()">
+
+    <script>
+        let editorObj1 = new JakubaEditor("text-editor");
+    </script>
+
 <!-- ######################################################################################################################## -->       
     <div id="text-editor">
         <!-- Toolbar -->
@@ -102,10 +184,10 @@
                 <ul>
                     <li>Fonts sizes >
                     <ul>
-                        <li style="font-size: 8pt;" onclick="setFontSize('8pt')">8pt</li>
-                        <li style="font-size: 10pt;" onclick="setFontSize('10pt')">10pt</li>
-                        <li style="font-size: 12pt;" onclick="setFontSize('12pt')">12pt</li>
-                        <li style="font-size: 14pt;" onclick="setFontSize('14pt')">14pt</li>
+                        <li style="font-size: 8pt;" onclick="editorObj1.setFontSize('8pt')">8pt</li>
+                        <li style="font-size: 10pt;" onclick="editorObj1.setFontSize('10pt')">10pt</li>
+                        <li style="font-size: 12pt;" onclick="editorObj1.setFontSize('12pt')">12pt</li>
+                        <li style="font-size: 14pt;" onclick="editorObj1.setFontSize('14pt')">14pt</li>
                     </ul>
                     </li>
                     <li>Fonts >
@@ -131,71 +213,6 @@
 
     </div>
 
-    <!-- Описание функций -->
-    <script>
-        // жирный шрифт, bold
-        function setBold() {
-            document.execCommand('bold', false, null);
-        }
-        // курсивный шрифт, italic
-        function setItalic() {
-            document.execCommand('italic', false, null);
-        }
-        // нижнее подчёркивание, underline
-        function setUnderline() {
-            document.execCommand('underline', false, null);
-        }
-        // зачёркивание текста, strikeThrough
-        function setStrikeThrough() {
-            document.execCommand('strikeThrough', false, null);
-        }
-        // размер шрифта
-        function setFontSize(fontSizePt) {
-            selection = window.getSelection().toString();
-            wrappedselection = '<span style="font-size: ' + fontSizePt + '">' + selection + '</span>';
-            document.execCommand('insertHTML', false, wrappedselection);
-        }
-
-        // шрифт
-        function setFont(fontFamily) {
-            document.execCommand('fontName', false, fontFamily);
-        }
-        
-        // обновление контента
-        function updateHiddenText() {
-            var editorContent = document.getElementById('editor').innerHTML;
-            document.getElementById('jakuba_editor_content').value = editorContent;
-        }
-
-        // работа меню
-        document.querySelectorAll("#toolbar>div").forEach(function(element) {
-            element.addEventListener("click", function() {
-                element.classList.add("active");
-            });
-        });
-
-        document.querySelectorAll("#toolbar>div>ul>li").forEach(function(element) {
-            element.addEventListener("click", function() {
-                element.classList.toggle("active");
-            });
-        });
-
-        document.addEventListener("mousedown", function(event) {
-            var target = event.target;
-            toolbarRemoveActive(target, "#toolbar>div>ul>li", "#toolbar>div, #toolbar>div>ul>li");
-            toolbarRemoveActive(target, "#toolbar>div>ul>li>ul", "#toolbar>div>ul>li");
-        });
-
-        function toolbarRemoveActive(target, arg1, arg2) {
-            var isInsideToolbarUl = target.closest(arg1);
-            if (!isInsideToolbarUl) {
-                document.querySelectorAll(arg2).forEach(function(element) {
-                    element.classList.remove("active");
-                });
-            }
-        }
-
-    </script>
 <!-- ######################################################################################################################## --> 
     <script>
         function save() {
@@ -205,8 +222,9 @@
             return false;
         }
         function updateText() {
-            updateHiddenText();
-            save();
+           // updateHiddenText();
+            // save();
+            alert("updateText");
         }
     </script>
 
