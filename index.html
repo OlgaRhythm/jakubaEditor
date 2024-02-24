@@ -3,11 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>JakubaEditor</title>
 
     <style>
+        #editor {
+            max-width: 50%; 
+            width: 500px; 
+            height: 200px; 
+            border: 1px solid #000;
+            padding: 10px 20px;
+        }
+
         #toolbar {
             cursor: pointer;
+            /*font-size: 16px;
+            line-height: 26px;*/
+            white-space: nowrap;
+        }
+        #toolbar button {
+            display: block;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 0;
+            padding: 0 5px;
+            border: none;
+            background: none;
             font-size: 16px;
             line-height: 26px;
         }
@@ -41,7 +61,7 @@
         #toolbar li {
             list-style: none;
             margin: 0;
-            padding: 0 5px;
+            padding: 0;
         }
         #toolbar div ul li:hover {
             background: #ccc;
@@ -63,26 +83,24 @@
     <textarea id="jakuba_editor_content" style="display: none;"></textarea>
     <!-- Toolbar -->
     <div id="toolbar">
-        <div id="file">File</div>
-        <div id="edit">Edit</div>
-        <div id="view">View</div>
-        <div id="insert">Insert</div>
-        <div id="format">Format
+        <div id="file"><button>File</button></div>
+        <div id="edit"><button>Edit</button></div>
+        <div id="view"><button>View</button></div>
+        <div id="insert"><button>Insert</button></div>
+        <div id="format"><button>Format</button>
             <ul>
-                <li>Font sizes >
+                <li><button>Fonts sizes ></button>
                 <ul>
-                    <li>8pt</li>
-                    <li>10pt</li>
-                    <li>12pt</li>
-                    <li>14pt</li>
+                    <li style="font-size: 8pt;" onclick="setFontSize('8pt')"><button>8pt</button></li>
+                    <li style="font-size: 10pt;" onclick="setFontSize('10pt')"><button>10pt</button></li>
+                    <li style="font-size: 12pt;" onclick="setFontSize('12pt')"><button>12pt</button></li>
+                    <li style="font-size: 14pt;" onclick="setFontSize('14pt')"><button>14pt</button></li>
                 </ul>
                 </li>
-                <li>Font sizes2 >
+                <li><button>Fonts ></button>
                     <ul>
-                        <li>8pt</li>
-                        <li>10pt</li>
-                        <li>12pt</li>
-                        <li>14pt</li>
+                        <li style="font-family: 'Times New Roman';">Times New Roman</li>
+                        <li style="font-family: 'Arial';">Arial</li>
                     </ul>
                     </li>
             </ul>
@@ -96,7 +114,7 @@
         <button onclick="setUnderline()">Underline</button>
         <button onclick="setStrikeThrough()">Strikethrough</button>
     </div>
-    <div id="editor" style="max-width: 50%; width: 500px; height: 200px; border: 1px solid #000;" contenteditable="true">Type your text here...</div>
+    <div id="editor" contenteditable="true"><div>Type your text here...</div></div>
 
     <!-- Описание функций -->
     <script>
@@ -117,6 +135,11 @@
             document.execCommand('strikeThrough', false, null);
         }
         // размер шрифта
+        function setFontSize(fontSizePt) {
+            selection = window.getSelection().toString();
+            wrappedselection = '<span style="font-size: ' + fontSizePt + '">' + selection + '</span>';
+            document.execCommand('insertHTML', false, wrappedselection);
+        }
         
         // обновление контента
         function updateHiddenText() {
@@ -139,29 +162,58 @@
 
         document.addEventListener("mousedown", function(event) {
             var target = event.target;
-            //var isInsideToolbar = target.closest("#toolbar");
-            //var isInsideToolbarDiv = target.closest("#toolbar>div");
-            var isInsideToolbarUl = target.closest("#toolbar>div>ul>li");
+            toolbarRemoveActive(target, "#toolbar>div>ul>li", "#toolbar>div, #toolbar>div>ul>li");
+            toolbarRemoveActive(target, "#toolbar>div>ul>li>ul", "#toolbar>div>ul>li");
+        });
 
-            if (/*!isInsideToolbar &&*/ /*!isInsideToolbarDiv &&*/ !isInsideToolbarUl) {
-                document.querySelectorAll("#toolbar>div, #toolbar>div>ul>li").forEach(function(element) {
+        function toolbarRemoveActive(target, arg1, arg2) {
+            var isInsideToolbarUl = target.closest(arg1);
+            if (!isInsideToolbarUl) {
+                document.querySelectorAll(arg2).forEach(function(element) {
                     element.classList.remove("active");
                 });
             }
-        });
+        }
 
-        document.addEventListener("mousedown", function(event) {
-            var target = event.target;
-            //var isInsideToolbar = target.closest("#toolbar");
-            //var isInsideToolbarDiv = target.closest("#toolbar>div");
-            var isInsideToolbarUl = target.closest("#toolbar>div>ul>li>ul");
 
-            if (/*!isInsideToolbar &&*/ /*!isInsideToolbarDiv &&*/ !isInsideToolbarUl) {
-                document.querySelectorAll("#toolbar>div>ul>li").forEach(function(element) {
-                    element.classList.remove("active");
-                });
-            }
-        });
+
+        // Глобальная переменная для хранения текущего выделения
+var currentSelection;
+
+// Функция для сохранения текущего выделения
+function saveSelection() {
+    if (window.getSelection) {
+        var selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            currentSelection = selection.getRangeAt(0);
+        }
+    }
+}
+
+// Функция для восстановления выделения
+function restoreSelection() {
+    if (currentSelection) {
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(currentSelection);
+    }
+}
+
+// Обработчик события mousedown для элементов вне текстового поля
+document.addEventListener('mousedown', function(event) {
+    var target = event.target;
+    // Проверяем, что цель клика не находится внутри текстового поля
+    if (!target.closest('#editor')) {
+        // Восстанавливаем выделение
+        restoreSelection();
+    }
+});
+
+// Обработчик события click для текстового поля
+document.getElementById('editor').addEventListener('click', function() {
+    // Сохраняем текущее выделение
+    saveSelection();
+});
 
 
     </script>
