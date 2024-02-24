@@ -4,39 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <style>
+        #toolbar {
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 26px;
+        }
+        #toolbar div {
+            display: inline-block;
+        }
+
+        #toolbar div ul {
+            width: 120px;
+        }
+
+        #toolbar div ul ul {
+            width: auto;
+        }
+
+        #toolbar div ul, 
+        #toolbar div ul ul,
+        #toolbar div.active ul ul {
+            display: none;
+            border: #000 1px solid;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+        #toolbar div.active>ul,
+        #toolbar div.active ul>li.active>ul {
+            display: block;
+            position: absolute;
+            background: #fff;
+        }
+        #toolbar li {
+            list-style: none;
+            margin: 0;
+            padding: 0 5px;
+        }
+        #toolbar div ul li:hover {
+            background: #ccc;
+        }
+        #toolbar div.active ul li ul {
+            left: 100%;
+            margin-top: -27px;
+        }
+
+    </style>
+
 </head>
 <body>
 
     <!-- Тестирование работы в редакторе -->
     <h1>Текстовый редактор JakubaEditor</h1>
     <form action="#" method="post" onsubmit="return save()">
-
 <!-- ######################################################################################################################## -->       
-    <textarea id="hidden-text" style="display: none;"></textarea>
-    <button onclick="setBold()">Bold</button>
-    <button onclick="setItalic()">Italic</button>
-    <br>
+    <textarea id="jakuba_editor_content" style="display: none;"></textarea>
+    <!-- Toolbar -->
+    <div id="toolbar">
+        <div id="file">File</div>
+        <div id="edit">Edit</div>
+        <div id="view">View</div>
+        <div id="insert">Insert</div>
+        <div id="format">Format
+            <ul>
+                <li>Font sizes >
+                <ul>
+                    <li>8pt</li>
+                    <li>10pt</li>
+                    <li>12pt</li>
+                    <li>14pt</li>
+                </ul>
+                </li>
+                <li>Font sizes2 >
+                    <ul>
+                        <li>8pt</li>
+                        <li>10pt</li>
+                        <li>12pt</li>
+                        <li>14pt</li>
+                    </ul>
+                    </li>
+            </ul>
+        </div>
+        <div id="help">Help</div>
+    </div>
+    <!-- Панель быстрого доступа -->
+    <div id="quick-tools">           
+        <button onclick="setBold()">Bold</button>
+        <button onclick="setItalic()">Italic</button>
+        <button onclick="setUnderline()">Underline</button>
+        <button onclick="setStrikeThrough()">Strikethrough</button>
+    </div>
     <div id="editor" style="max-width: 50%; width: 500px; height: 200px; border: 1px solid #000;" contenteditable="true">Type your text here...</div>
-    <br>
 
+    <!-- Описание функций -->
     <script>
+        // жирный шрифт, bold
         function setBold() {
             document.execCommand('bold', false, null);
         }
-
+        // курсивный шрифт, italic
         function setItalic() {
             document.execCommand('italic', false, null);
         }
-
+        // нижнее подчёркивание, underline
+        function setUnderline() {
+            document.execCommand('underline', false, null);
+        }
+        // зачёркивание текста, strikeThrough
+        function setStrikeThrough() {
+            document.execCommand('strikeThrough', false, null);
+        }
+        // размер шрифта
+        
+        // обновление контента
         function updateHiddenText() {
             var editorContent = document.getElementById('editor').innerHTML;
-            document.getElementById('hidden-text').value = editorContent;
+            document.getElementById('jakuba_editor_content').value = editorContent;
         }
+
+        // работа меню
+        document.querySelectorAll("#toolbar>div").forEach(function(element) {
+            element.addEventListener("click", function() {
+                element.classList.add("active");
+            });
+        });
+
+        document.querySelectorAll("#toolbar>div>ul>li").forEach(function(element) {
+            element.addEventListener("click", function() {
+                element.classList.toggle("active");
+            });
+        });
+
+        document.addEventListener("mousedown", function(event) {
+            var target = event.target;
+            //var isInsideToolbar = target.closest("#toolbar");
+            //var isInsideToolbarDiv = target.closest("#toolbar>div");
+            var isInsideToolbarUl = target.closest("#toolbar>div>ul>li");
+
+            if (/*!isInsideToolbar &&*/ /*!isInsideToolbarDiv &&*/ !isInsideToolbarUl) {
+                document.querySelectorAll("#toolbar>div, #toolbar>div>ul>li").forEach(function(element) {
+                    element.classList.remove("active");
+                });
+            }
+        });
+
+        document.addEventListener("mousedown", function(event) {
+            var target = event.target;
+            //var isInsideToolbar = target.closest("#toolbar");
+            //var isInsideToolbarDiv = target.closest("#toolbar>div");
+            var isInsideToolbarUl = target.closest("#toolbar>div>ul>li>ul");
+
+            if (/*!isInsideToolbar &&*/ /*!isInsideToolbarDiv &&*/ !isInsideToolbarUl) {
+                document.querySelectorAll("#toolbar>div>ul>li").forEach(function(element) {
+                    element.classList.remove("active");
+                });
+            }
+        });
+
+
     </script>
 <!-- ######################################################################################################################## --> 
     <script>
         function save() {
-            var text = document.getElementById("hidden-text").value;
+            var text = document.getElementById("jakuba_editor_content").value;
             var messageDiv = document.getElementById("result");
             messageDiv.innerHTML = text;
             return false;
@@ -46,6 +178,8 @@
             save();
         }
     </script>
+
+    <br>
     <button type="submit" onclick="updateText()">Обновить</button>
     </form>
 
