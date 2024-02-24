@@ -11,15 +11,25 @@
             width: 500px; 
             height: 200px; 
             border: 1px solid #000;
-            padding: 10px 20px;
+            padding: 15px 10px;
         }
 
         #toolbar {
             cursor: pointer;
             /*font-size: 16px;
             line-height: 26px;*/
-            white-space: nowrap;
         }
+
+        #toolbar *{
+            white-space: nowrap;
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none; /* Safari */
+            -khtml-user-select: none; /* Konqueror HTML */
+            -moz-user-select: none; /* Old versions of Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
+        }
+
         #toolbar button {
             display: block;
             cursor: pointer;
@@ -30,6 +40,7 @@
             background: none;
             font-size: 16px;
             line-height: 26px;
+            width: 100%;
         }
         #toolbar div {
             display: inline-block;
@@ -80,41 +91,45 @@
     <h1>Текстовый редактор JakubaEditor</h1>
     <form action="#" method="post" onsubmit="return save()">
 <!-- ######################################################################################################################## -->       
-    <textarea id="jakuba_editor_content" style="display: none;"></textarea>
-    <!-- Toolbar -->
-    <div id="toolbar">
-        <div id="file"><button>File</button></div>
-        <div id="edit"><button>Edit</button></div>
-        <div id="view"><button>View</button></div>
-        <div id="insert"><button>Insert</button></div>
-        <div id="format"><button>Format</button>
-            <ul>
-                <li><button>Fonts sizes ></button>
+    <div id="text-editor">
+        <!-- Toolbar -->
+        <div id="toolbar">
+            <div id="file">File</div>
+            <div id="edit">Edit</div>
+            <div id="view">View</div>
+            <div id="insert">Insert</div>
+            <div id="format">Format
                 <ul>
-                    <li style="font-size: 8pt;" onclick="setFontSize('8pt')"><button>8pt</button></li>
-                    <li style="font-size: 10pt;" onclick="setFontSize('10pt')"><button>10pt</button></li>
-                    <li style="font-size: 12pt;" onclick="setFontSize('12pt')"><button>12pt</button></li>
-                    <li style="font-size: 14pt;" onclick="setFontSize('14pt')"><button>14pt</button></li>
-                </ul>
-                </li>
-                <li><button>Fonts ></button>
+                    <li>Fonts sizes >
                     <ul>
-                        <li style="font-family: 'Times New Roman';">Times New Roman</li>
-                        <li style="font-family: 'Arial';">Arial</li>
+                        <li style="font-size: 8pt;" onclick="setFontSize('8pt')">8pt</li>
+                        <li style="font-size: 10pt;" onclick="setFontSize('10pt')">10pt</li>
+                        <li style="font-size: 12pt;" onclick="setFontSize('12pt')">12pt</li>
+                        <li style="font-size: 14pt;" onclick="setFontSize('14pt')">14pt</li>
                     </ul>
                     </li>
-            </ul>
+                    <li>Fonts >
+                        <ul>
+                            <li style="font-family: 'Times New Roman';" onclick="setFont('Times New Roman')">Times New Roman</li>
+                            <li style="font-family: 'Arial';" onclick="setFont('Arial')">Arial</li>
+                        </ul>
+                        </li>
+                </ul>
+            </div>
+            <div id="help">Help</div>
         </div>
-        <div id="help">Help</div>
+        <!-- Панель быстрого доступа -->
+        <div id="quick-tools">           
+            <button onclick="setBold()">Bold</button>
+            <button onclick="setItalic()">Italic</button>
+            <button onclick="setUnderline()">Underline</button>
+            <button onclick="setStrikeThrough()">Strikethrough</button>
+        </div>
+
+        <textarea id="jakuba_editor_content" style="display: none;"></textarea>
+        <div id="editor" contenteditable="true"><div>Type your text here...</div></div>
+
     </div>
-    <!-- Панель быстрого доступа -->
-    <div id="quick-tools">           
-        <button onclick="setBold()">Bold</button>
-        <button onclick="setItalic()">Italic</button>
-        <button onclick="setUnderline()">Underline</button>
-        <button onclick="setStrikeThrough()">Strikethrough</button>
-    </div>
-    <div id="editor" contenteditable="true"><div>Type your text here...</div></div>
 
     <!-- Описание функций -->
     <script>
@@ -139,6 +154,11 @@
             selection = window.getSelection().toString();
             wrappedselection = '<span style="font-size: ' + fontSizePt + '">' + selection + '</span>';
             document.execCommand('insertHTML', false, wrappedselection);
+        }
+
+        // шрифт
+        function setFont(fontFamily) {
+            document.execCommand('fontName', false, fontFamily);
         }
         
         // обновление контента
@@ -174,47 +194,6 @@
                 });
             }
         }
-
-
-
-        // Глобальная переменная для хранения текущего выделения
-var currentSelection;
-
-// Функция для сохранения текущего выделения
-function saveSelection() {
-    if (window.getSelection) {
-        var selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            currentSelection = selection.getRangeAt(0);
-        }
-    }
-}
-
-// Функция для восстановления выделения
-function restoreSelection() {
-    if (currentSelection) {
-        var selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(currentSelection);
-    }
-}
-
-// Обработчик события mousedown для элементов вне текстового поля
-document.addEventListener('mousedown', function(event) {
-    var target = event.target;
-    // Проверяем, что цель клика не находится внутри текстового поля
-    if (!target.closest('#editor')) {
-        // Восстанавливаем выделение
-        restoreSelection();
-    }
-});
-
-// Обработчик события click для текстового поля
-document.getElementById('editor').addEventListener('click', function() {
-    // Сохраняем текущее выделение
-    saveSelection();
-});
-
 
     </script>
 <!-- ######################################################################################################################## --> 
