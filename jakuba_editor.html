@@ -1,0 +1,192 @@
+<!----------------------------------------------- STYLES ------------------------------------------------>
+<!-- 
+    Поместите перед закрывающим тегом </head> 
+-->
+<style>
+    #editor {
+        max-width: 50%; 
+        width: 500px; 
+        height: 200px; 
+        border: 1px solid #000;
+        padding: 15px 10px;
+    }
+
+    #toolbar {
+        cursor: pointer;
+        /*font-size: 16px;
+        line-height: 26px;*/
+    }
+
+    #toolbar *{
+        white-space: nowrap;
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none;
+    }
+
+    #toolbar button {
+        display: block;
+        cursor: pointer;
+        font-family: inherit;
+        margin: 0;
+        padding: 0 5px;
+        border: none;
+        background: none;
+        font-size: 16px;
+        line-height: 26px;
+        width: 100%;
+    }
+    #toolbar div {
+        display: inline-block;
+    }
+
+    #toolbar div ul {
+        width: 120px;
+    }
+
+    #toolbar div ul ul {
+        width: auto;
+    }
+
+    #toolbar div ul, 
+    #toolbar div ul ul,
+    #toolbar div.active ul ul {
+        display: none;
+        border: #000 1px solid;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+    }
+    #toolbar div.active>ul,
+    #toolbar div.active ul>li.active>ul {
+        display: block;
+        position: absolute;
+        background: #fff;
+    }
+    #toolbar li {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    #toolbar div ul li:hover {
+        background: #ccc;
+    }
+    #toolbar div.active ul li ul {
+        left: 100%;
+        margin-top: -27px;
+    }
+</style>
+
+<!--------------------------------------------- TEXT EDITOR --------------------------------------------->
+<!-- 
+    Разместите в то место, где должен отображаться текстовый редактор.
+    Для доступа к содержимому используйте document.getElementById("jakuba_editor_content").value; 
+-->
+<div id="text-editor">
+    <!-- Toolbar -->
+    <div id="toolbar">
+        <div id="file">File</div>
+        <div id="edit">Edit</div>
+        <div id="view">View</div>
+        <div id="insert">Insert</div>
+        <div id="format">Format
+            <ul>
+                <li>Fonts sizes >
+                <ul>
+                    <li style="font-size: 8pt;" onclick="setFontSize('8pt')">8pt</li>
+                    <li style="font-size: 10pt;" onclick="setFontSize('10pt')">10pt</li>
+                    <li style="font-size: 12pt;" onclick="setFontSize('12pt')">12pt</li>
+                    <li style="font-size: 14pt;" onclick="setFontSize('14pt')">14pt</li>
+                </ul>
+                </li>
+                <li>Fonts >
+                    <ul>
+                        <li style="font-family: 'Times New Roman';" onclick="setFont('Times New Roman')">Times New Roman</li>
+                        <li style="font-family: 'Arial';" onclick="setFont('Arial')">Arial</li>
+                    </ul>
+                    </li>
+            </ul>
+        </div>
+        <div id="help">Help</div>
+    </div>
+    <!-- Панель быстрого доступа -->
+    <div id="quick-tools">           
+        <button onclick="setBold()">Bold</button>
+        <button onclick="setItalic()">Italic</button>
+        <button onclick="setUnderline()">Underline</button>
+        <button onclick="setStrikeThrough()">Strikethrough</button>
+    </div>
+
+    <textarea id="jakuba_editor_content" style="display: none;"></textarea>
+    <div id="editor" contenteditable="true"><div>Type your text here...</div></div>
+
+</div>
+
+<!-- Описание функций -->
+<script>
+    // жирный шрифт, bold
+    function setBold() {
+        document.execCommand('bold', false, null);
+    }
+    // курсивный шрифт, italic
+    function setItalic() {
+        document.execCommand('italic', false, null);
+    }
+    // нижнее подчёркивание, underline
+    function setUnderline() {
+        document.execCommand('underline', false, null);
+    }
+    // зачёркивание текста, strikeThrough
+    function setStrikeThrough() {
+        document.execCommand('strikeThrough', false, null);
+    }
+    // размер шрифта
+    function setFontSize(fontSizePt) {
+        selection = window.getSelection().toString();
+        wrappedselection = '<span style="font-size: ' + fontSizePt + '">' + selection + '</span>';
+        document.execCommand('insertHTML', false, wrappedselection);
+    }
+
+    // шрифт
+    function setFont(fontFamily) {
+        document.execCommand('fontName', false, fontFamily);
+    }
+    
+    // обновление контента
+    function updateHiddenText() {
+        var editorContent = document.getElementById('editor').innerHTML;
+        document.getElementById('jakuba_editor_content').value = editorContent;
+    }
+
+    // работа меню
+    document.querySelectorAll("#toolbar>div").forEach(function(element) {
+        element.addEventListener("click", function() {
+            element.classList.add("active");
+        });
+    });
+
+    document.querySelectorAll("#toolbar>div>ul>li").forEach(function(element) {
+        element.addEventListener("click", function() {
+            element.classList.toggle("active");
+        });
+    });
+
+    document.addEventListener("mousedown", function(event) {
+        var target = event.target;
+        toolbarRemoveActive(target, "#toolbar>div>ul>li", "#toolbar>div, #toolbar>div>ul>li");
+        toolbarRemoveActive(target, "#toolbar>div>ul>li>ul", "#toolbar>div>ul>li");
+    });
+
+    function toolbarRemoveActive(target, arg1, arg2) {
+        var isInsideToolbarUl = target.closest(arg1);
+        if (!isInsideToolbarUl) {
+            document.querySelectorAll(arg2).forEach(function(element) {
+                element.classList.remove("active");
+            });
+        }
+    }
+
+</script>
