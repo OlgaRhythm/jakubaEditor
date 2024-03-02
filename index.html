@@ -81,97 +81,99 @@
             left: 100%;
             margin-top: -27px;
         }
-
     </style>
 
-    <!-- Описание функций -->
-    <script>
+        <!-- Описание функций -->
+        <script>
         
-        class JakubaEditor {
-            containerId;
-
-            constructor (_containerId) {
-                this.updateHiddenText();
-                this.containerId = _containerId;
-                // работа меню
-                /*
-                document.querySelectorAll("#toolbar>div").forEach(function(element) {
-                    element.addEventListener("click", function() {
-                        element.classList.add("active");
-                    });
-                });
-                
-                document.querySelectorAll("#toolbar>div>ul>li").forEach(function(element) {
-                    element.addEventListener("click", function() {
-                        element.classList.toggle("active");
-                    });
-                });
-
-                document.addEventListener("mousedown", function(event) {
-                    var target = event.target;
-                    this.toolbarRemoveActive(target, "#toolbar>div>ul>li", "#toolbar>div, #toolbar>div>ul>li");
-                    this.toolbarRemoveActive(target, "#toolbar>div>ul>li>ul", "#toolbar>div>ul>li");
-                });
-                */
-            } 
-
-            // жирный шрифт, bold
-            setBold() {
-                document.execCommand('bold', false, null);
-            }
-            // курсивный шрифт, italic
-            setItalic() {
-                document.execCommand('italic', false, null);
-            }
-            // нижнее подчёркивание, underline
-            setUnderline() {
-                document.execCommand('underline', false, null);
-            }
-            // зачёркивание текста, strikeThrough
-            setStrikeThrough() {
-                document.execCommand('strikeThrough', false, null);
-            }
-            // размер шрифта
-            setFontSize(fontSizePt) {
-                selection = window.getSelection().toString();
-                wrappedselection = '<span style="font-size: ' + fontSizePt + '">' + selection + '</span>';
-                document.execCommand('insertHTML', false, wrappedselection);
-            }
+            class JakubaEditor {
+                containerId;
             
-            // шрифт
-            setFont(fontFamily) {
-                document.execCommand('fontName', false, fontFamily);
-            }
-            
-            // обновление контента
-            updateHiddenText() {
-                var editorContent = document.getElementById('editor').innerHTML;
-                document.getElementById('jakuba_editor_content').value = editorContent;
-            }
-
-            toolbarRemoveActive(target, arg1, arg2) {
-                var isInsideToolbarUl = target.closest(arg1);
-                if (!isInsideToolbarUl) {
-                    document.querySelectorAll(arg2).forEach(function(element) {
-                        element.classList.remove("active");
+                constructor (_containerId) {
+                    this.containerId = _containerId;
+                    
+                    document.addEventListener('DOMContentLoaded', function() {
+                        
+                        // работа меню
+                        document.querySelectorAll("#toolbar>div").forEach(function(element) {
+                            element.addEventListener("click", function() {
+                                element.classList.add("active");
+                            });
+                        });
+                        document.querySelectorAll("#toolbar>div>ul>li").forEach(function(element) {
+                            element.addEventListener("click", function() {
+                                element.classList.toggle("active");
+                            });
+                        });
+                        document.addEventListener("mousedown", function(element) {
+                            var target = event.target;
+                            if (!target.closest("#toolbar>div>ul>li")) {
+                                document.querySelectorAll("#toolbar>div, #toolbar>div>ul>li").forEach(function(element) {
+                                    element.classList.remove("active");
+                                });
+                            }
+                            if (!target.closest("#toolbar>div>ul>li>ul")) {
+                                document.querySelectorAll("#toolbar>div>ul>li").forEach(function(element) {
+                                    element.classList.remove("active");
+                                });
+                            }
+                        });
                     });
+                } 
+            
+                // жирный шрифт, bold
+                setBold() {
+                    document.execCommand('bold', false, null);
                 }
-            }
-        }
+                // курсивный шрифт, italic
+                setItalic() {
+                    document.execCommand('italic', false, null);
+                }
+                // нижнее подчёркивание, underline
+                setUnderline() {
+                    document.execCommand('underline', false, null);
+                }
+                // зачёркивание текста, strikeThrough
+                setStrikeThrough() {
+                    document.execCommand('strikeThrough', false, null);
+                }
+                // размер шрифта
+                setFontSize(fontSizePt) {
+                    var selection = window.getSelection().toString();
+                    var wrappedselection = '<span style="font-size: ' + fontSizePt + '">' + selection + '</span>';
+                    document.execCommand('insertHTML', false, wrappedselection);
+                }
+                
+                // шрифт
+                setFont(fontFamily) {
+                    document.execCommand('fontName', false, fontFamily);
+                }
+                
+                // обновление контента скрытой textarea
+                updateHiddenText() {
+                    document.getElementById('jakuba_editor_content').value = document.getElementById('editor').innerHTML;
+                }
 
-    </script>
+                /**
+                 * Возвращает актуальное содержимое редактора
+                */
+                getContent() {
+
+                }
+            } 
+        </script>
 
 </head>
 <body>
 
     <!-- Тестирование работы в редакторе -->
     <h1>Текстовый редактор JakubaEditor</h1>
-    <form action="#" method="post" onsubmit="return save()">
 
     <script>
         let editorObj1 = new JakubaEditor("text-editor");
     </script>
-
+	
+	<form action="#" method="post" onsubmit="return save()">
 <!-- ######################################################################################################################## -->       
     <div id="text-editor">
         <!-- Toolbar -->
@@ -183,48 +185,49 @@
             <div id="format">Format
                 <ul>
                     <li>Fonts sizes >
-                    <ul>
-                        <li style="font-size: 8pt;" onclick="editorObj1.setFontSize('8pt')">8pt</li>
-                        <li style="font-size: 10pt;" onclick="editorObj1.setFontSize('10pt')">10pt</li>
-                        <li style="font-size: 12pt;" onclick="editorObj1.setFontSize('12pt')">12pt</li>
-                        <li style="font-size: 14pt;" onclick="editorObj1.setFontSize('14pt')">14pt</li>
-                    </ul>
+                        <ul>
+                            <li style="font-size: 8pt;" onclick="editorObj1.setFontSize('8pt')">8pt</li>
+                            <li style="font-size: 10pt;" onclick="editorObj1.setFontSize('10pt')">10pt</li>
+                            <li style="font-size: 12pt;" onclick="editorObj1.setFontSize('12pt')">12pt</li>
+                            <li style="font-size: 14pt;" onclick="editorObj1.setFontSize('14pt')">14pt</li>
+                        </ul>
                     </li>
                     <li>Fonts >
                         <ul>
-                            <li style="font-family: 'Times New Roman';" onclick="setFont('Times New Roman')">Times New Roman</li>
-                            <li style="font-family: 'Arial';" onclick="setFont('Arial')">Arial</li>
+                            <li style="font-family: 'Times New Roman';" onclick="editorObj1.setFont('Times New Roman')">Times New Roman</li>
+                            <li style="font-family: 'Arial';" onclick="editorObj1.setFont('Arial')">Arial</li>
                         </ul>
-                        </li>
+                    </li>
                 </ul>
             </div>
             <div id="help">Help</div>
         </div>
         <!-- Панель быстрого доступа -->
         <div id="quick-tools">           
-            <button onclick="setBold()">Bold</button>
-            <button onclick="setItalic()">Italic</button>
-            <button onclick="setUnderline()">Underline</button>
-            <button onclick="setStrikeThrough()">Strikethrough</button>
+            <button onclick="editorObj1.setBold()">Bold</button>
+            <button onclick="editorObj1.setItalic()">Italic</button>
+            <button onclick="editorObj1.setUnderline()">Underline</button>
+            <button onclick="editorObj1.setStrikeThrough()">Strikethrough</button>
         </div>
 
         <textarea id="jakuba_editor_content" style="display: none;"></textarea>
         <div id="editor" contenteditable="true"><div>Type your text here...</div></div>
 
     </div>
-
 <!-- ######################################################################################################################## --> 
     <script>
+        /**
+         * Принимает содержимое редактора и присваевает его переменной страницы для отображения
+        */
         function save() {
-            var text = document.getElementById("jakuba_editor_content").value;
-            var messageDiv = document.getElementById("result");
-            messageDiv.innerHTML = text;
+            document.getElementById("result").innerHTML = document.getElementById("jakuba_editor_content").value;
             return false;
+          
+            
         }
         function updateText() {
-           // updateHiddenText();
-            // save();
-            alert("updateText");
+            editorObj1.updateHiddenText();
+            save();
         }
     </script>
 
