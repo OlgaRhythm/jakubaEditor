@@ -8,19 +8,20 @@
     <style>
         #editor {
             max-width: 50%; 
-            width: 500px; 
+            width: 600px; 
             height: 200px; 
             border: 1px solid #000;
             padding: 15px 10px;
         }
 
-        #toolbar {
+        .toolbar {
             cursor: pointer;
             /*font-size: 16px;
             line-height: 26px;*/
+
         }
 
-        #toolbar *{
+        .toolbar *{
             white-space: nowrap;
             -webkit-touch-callout: none; /* iOS Safari */
             -webkit-user-select: none; /* Safari */
@@ -30,7 +31,7 @@
             user-select: none;
         }
 
-        #toolbar button {
+        .toolbar button {
             display: block;
             cursor: pointer;
             font-family: inherit;
@@ -42,44 +43,50 @@
             line-height: 26px;
             width: 100%;
         }
-        #toolbar div {
+        .toolbar div {
             display: inline-block;
+            margin: 0 5px;
         }
 
-        #toolbar div ul {
+        .toolbar div ul {
             width: 120px;
         }
 
-        #toolbar div ul ul {
+        .toolbar div ul ul {
             width: auto;
         }
 
-        #toolbar div ul, 
-        #toolbar div ul ul,
-        #toolbar div.active ul ul {
+        .toolbar div ul, 
+        .toolbar div ul ul,
+        .toolbar div.active ul ul {
             display: none;
             border: #000 1px solid;
             padding: 0;
             margin: 0;
             cursor: pointer;
         }
-        #toolbar div.active>ul,
-        #toolbar div.active ul>li.active>ul {
+        .toolbar div.active>ul,
+        .toolbar div.active ul>li.active>ul {
             display: block;
             position: absolute;
             background: #fff;
         }
-        #toolbar li {
+        .toolbar li {
             list-style: none;
             margin: 0;
             padding: 0;
         }
-        #toolbar div ul li:hover {
+        .toolbar div ul li:hover {
             background: #ccc;
         }
-        #toolbar div.active ul li ul {
+        .toolbar div.active ul li ul {
             left: 100%;
             margin-top: -27px;
+        }
+        .color {
+            width: 20px;
+            height: 20px;
+            margin: 5px;
         }
     </style>
 
@@ -92,12 +99,16 @@
 <!-- ######################################################################################################################## -->       
     <div id="text-editor">
         <!-- Toolbar -->
-        <div id="toolbar">
-            <div id="file">File</div>
-            <div id="edit">Edit</div>
-            <div id="view">View</div>
-            <div id="insert">Insert</div>
-            <div id="format">Format
+        <div class="toolbar">
+            <div class="file">File
+                <ul>
+                    <li onclick="download()">Download</li>
+                </ul>
+            </div>
+            <div class="edit">Edit</div>
+            <div class="view">View</div>
+            <div class="insert">Insert</div>
+            <div class="format">Format
                 <ul>
                     <li>Fonts sizes >
                     <ul>
@@ -112,13 +123,42 @@
                             <li style="font-family: 'Times New Roman';" onclick="setFont('Times New Roman')">Times New Roman</li>
                             <li style="font-family: 'Arial';" onclick="setFont('Arial')">Arial</li>
                         </ul>
-                        </li>
+                    </li>
+                    <li>Formats >
+                        <ul>
+                            <li onclick="setParagraph()">Paragraph</li>
+                            <li onclick="setHeading('h1')" style="font-size: 2em; margin: 0;">Heading 1</li>
+                            <li onclick="setHeading('h2')" style="font-size: 1.5em; margin: 0;">Heading 2</li>
+                            <li onclick="setHeading('h3')" style="font-size: 1.125em; margin: 0;">Heading 3</li>
+                            <li onclick="setHeading('h4')" style="font-size: 1em; margin: 0;">Heading 4</li>
+                            <li onclick="setHeading('h5')" style="font-size: 0.833em; margin: 0;">Heading 5</li>
+                            <li onclick="setHeading('h6')" style="font-size: 0.75em; margin: 0;">Heading 6</li>
+                        </ul>
+                    </li>
+                    <li>Align >
+                        <ul>
+                            <li onclick="setAlign('justifyLeft')">Left</li>
+                            <li onclick="setAlign('justifyCenter')">Center</li>
+                            <li onclick="setAlign('justifyRight')">Right</li>
+                            <li onclick="setAlign('justifyFull')">Justify</li>
+                        </ul>
+                    </li>
+                    <li>Colors >
+                        <ul>
+                            <li><div class="color" onclick="setColor('black')" style="background-color: black;"></div></li>
+                            <li><div class="color" onclick="setColor('grey')" style="background-color: grey;"></div></li>
+                            <li><div class="color" onclick="setColor('red')" style="background-color: red;"></div></li>
+                            <li><div class="color" onclick="setColor('orange')" style="background-color: orange;"></div></li>
+                            <li><div class="color" onclick="setColor('green')" style="background-color: green;"></div></li>
+                            <li><div class="color" onclick="setColor('blue')" style="background-color: blue;"></div></li>        
+                        </ul>
+                    </li>
                 </ul>
             </div>
-            <div id="help">Help</div>
+            <div class="help">Help</div>
         </div>
         <!-- Панель быстрого доступа -->
-        <div id="quick-tools">           
+        <div class="quick-tools">           
             <button onclick="setBold()">Bold</button>
             <button onclick="setItalic()">Italic</button>
             <button onclick="setUnderline()">Underline</button>
@@ -148,6 +188,21 @@
         function setStrikeThrough() {
             document.execCommand('strikeThrough', false, null);
         }
+
+        // File
+        // Save as HTML
+        function download() {
+            var data = document.getElementById('editor').innerHTML;
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(data));
+            element.setAttribute('download', 'index.html');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // Format
         // размер шрифта
         function setFontSize(fontSizePt) {
             selection = window.getSelection().toString();
@@ -159,6 +214,26 @@
         function setFont(fontFamily) {
             document.execCommand('fontName', false, fontFamily);
         }
+
+        // параграф
+        function setParagraph() {
+            document.execCommand('formatBlock', false, 'p');
+        }
+
+        // заголовки
+        function setHeading(heading) {
+            document.execCommand('formatBlock', false, heading);
+        }
+
+        // выравнивание 
+        function setAlign(align) {
+            document.execCommand(align, false, null);
+        }
+
+        // цвет текста
+        function setColor(color) {
+            document.execCommand('foreColor', false, color);
+        }
         
         // обновление контента
         function updateHiddenText() {
@@ -167,13 +242,13 @@
         }
 
         // работа меню
-        document.querySelectorAll("#toolbar>div").forEach(function(element) {
+        document.querySelectorAll(".toolbar>div").forEach(function(element) {
             element.addEventListener("click", function() {
                 element.classList.add("active");
             });
         });
 
-        document.querySelectorAll("#toolbar>div>ul>li").forEach(function(element) {
+        document.querySelectorAll(".toolbar>div>ul>li").forEach(function(element) {
             element.addEventListener("click", function() {
                 element.classList.toggle("active");
             });
@@ -181,8 +256,8 @@
 
         document.addEventListener("mousedown", function(event) {
             var target = event.target;
-            toolbarRemoveActive(target, "#toolbar>div>ul>li", "#toolbar>div, #toolbar>div>ul>li");
-            toolbarRemoveActive(target, "#toolbar>div>ul>li>ul", "#toolbar>div>ul>li");
+            toolbarRemoveActive(target, ".toolbar>div>ul>li", ".toolbar>div, .toolbar>div>ul>li");
+            toolbarRemoveActive(target, ".toolbar>div>ul>li>ul", ".toolbar>div>ul>li");
         });
 
         function toolbarRemoveActive(target, arg1, arg2) {
